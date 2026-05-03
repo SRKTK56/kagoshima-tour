@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 鹿児島 AI 旅行コンシェルジュ
+### Kagoshima AI Travel Concierge — Powered by Viator × AI
 
-## Getting Started
+> Viator Travel Tech Challenge 提出作品
 
-First, run the development server:
+---
 
+## サービス概要
+
+**鹿児島に特化したAI旅行コンシェルジュ**です。チャット形式の対話を通じてユーザーの旅の要件を丁寧にヒアリングし、Viator Partner APIのリアルタイムデータをもとに最適なツアーと旅程を自動生成します。
+
+旅行計画は「何をしたいかわからない」「選択肢が多すぎて決められない」という課題があります。本サービスはAIが7つの質問で要件を深掘りし、予算・同行者・子供の年齢・ペースなど全条件を考慮した上ではじめてツアーを提案します。
+
+---
+
+## 主な機能
+
+### 🤖 AI深掘りインタビュー（Ask for Question 形式）
+- 出発地・旅行時期・日数・同行者・予算・テーマ・ペースを1問ずつ選択式で収集
+- 全7項目が揃うまでツアー提案を行わない設計で、ナンセンスな提案を防止
+- 選択肢タップで回答 → 次の質問へ自動進行
+
+### 🗺️ リアルタイム旅程パネル
+- チャットの回答が蓄積されるたびに右サイドパネルの旅程表が自動更新
+- 日程・時刻・スポット写真・地図リンク・予約URLを1画面で確認
+- Google Mapsポップアップで各スポットの位置を即確認
+
+### 🎯 インテリジェントフィルタリング
+- **予算フィルター**: 交通費（往復）+ 宿泊費を差し引いた残額でViator APIを絞り込み
+- **同行者フィルター**: 子連れ家族には酒類・高体力ツアーを自動除外、カップルにはプライベートツアーを優先
+- **ペースフィルター**: のんびり派は高体力ツアーを除外
+- **季節フィルター**: 旅行月に応じたキーワード補完
+
+### 👨‍👩‍👧‍👦 子供年齢別料金計算
+- 子供の年齢を個別ヒアリングし、日本の料金区分に基づいて正確に算出
+  - 0〜2歳: 交通・ツアー無料
+  - 3〜5歳: 交通無料、ツアー半額
+  - 6〜11歳（小学生）: 交通・ツアー半額
+  - 12歳〜: 大人料金
+- 旅程パネルに「大人1人あたり」と「家族全員合計」を子供内訳付きで表示
+
+### ✅ ツアー選択 → プラン確定フロー
+- 複数ツアーカードをタップして選択
+- 「このツアーでプランを作る」ボタンで旅程に反映
+
+### 🏨 カスタムツアー管理（管理画面）
+- `/admin` からオリジナルツアーを登録・削除
+- 登録済みツアーはViatorのツアーより優先して提案される
+
+---
+
+## Viator API 統合詳細
+
+| エンドポイント | 用途 |
+|---|---|
+| `GET /destinations` | 鹿児島のdestination ID取得（4663） |
+| `POST /products/search` | ツアー検索（予算・評価・所要時間フィルター付き） |
+
+利用しているフィルタリングパラメータ: `destination` / `highestPrice` / `durationInMinutes` / `flags` / `sorting`
+
+各ツアーカードの「予約する」ボタンはViatorのアフィリエイトURLに直結しています。
+
+---
+
+## 技術スタック
+
+| カテゴリ | 技術 |
+|---|---|
+| フレームワーク | Next.js 16 (App Router) |
+| AI | AI SDK v6 + GPT-4o |
+| UI | Tailwind CSS + shadcn/ui |
+| データベース | SQLite（better-sqlite3）|
+| ツアーデータ | Viator Partner API v2 |
+
+---
+
+## ローカル実行方法
+
+### 1. リポジトリをクローン
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/kagoshima-tour.git
+cd kagoshima-tour
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. 依存関係のインストール
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. 環境変数の設定
+```bash
+cp .env.example .env.local
+```
+`.env.local` を開き、APIキーを設定してください：
+- `OPENAI_API_KEY` — [OpenAI](https://platform.openai.com/api-keys) から取得
+- `VIATOR_API_KEY` — [Viator Partner Program](https://partners.viator.com/signup?mcid=66150&program=affiliate) から取得（未設定でもモックデータで動作します）
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. 開発サーバーの起動
+```bash
+npm run dev
+```
+[http://localhost:3000](http://localhost:3000) を開いてください。
 
-## Learn More
+### 5. 管理画面
+[http://localhost:3000/admin](http://localhost:3000/admin) からオリジナルツアーの登録・管理ができます。
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## デモの流れ
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. チャットに「鹿児島に家族で旅行したい」と入力
+2. AIが出発地・時期・日数・同行者・子供の年齢・予算・テーマ・ペースを1問ずつ質問
+3. 全項目が揃うと → Viator APIでツアー検索 → 旅程表が右パネルに自動生成
+4. ツアーカードをタップして選択 → 「このツアーでプランを作る」で旅程に反映
+5. 旅程パネルで費用内訳（子供料金込み）を確認
+6. 「予約する」ボタンでViatorの予約ページへ
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ライセンス
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
