@@ -1,5 +1,8 @@
 # Viator Travel Tech Challenge — Project Description
 
+## Demo Video
+🎬 [Watch on YouTube](https://youtu.be/OckPvBFKu5g)
+
 ## What We Built
 
 **Kagoshima AI Travel Concierge** is a deeply personalized travel planning assistant focused on Kagoshima, Japan — a destination rich with active volcanoes, sand-bath onsen, world heritage forests, and Kurobuta pork cuisine. The app addresses a fundamental problem in travel planning: generic recommendations that ignore what travelers actually need. Most travel tools throw options at users without understanding their budget constraints, travel companions, physical pace preference, or whether they have young children who can't participate in high-intensity activities.
